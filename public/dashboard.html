@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Souls-Like</title>
     <link rel="stylesheet" href="./css/styleDashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -49,12 +50,14 @@
         <section class="charts">
             <div class="chart-box">
                 <h3>Precisão ao Longo do Tempo</h3>
-                <div class="chart-placeholder">[Gráfico de linha]</div>
+                <!-- <div class="chart-placeholder">[Gráfico de linha]</div> -->
+                <canvas id="chart-precisao"></canvas>
             </div>
 
             <div class="chart-box">
                 <h3>Perguntas Mais Perdidas</h3>
-                <div class="chart-placeholder">[Gráfio de Barras]</div>
+                <!-- <div class="chart-placeholder">[Gráfio de Barras]</div> -->
+                <canvas id="chart-perguntas"></canvas>
             </div>
         </section>
     </main>
@@ -63,4 +66,55 @@
 </html>
 <script>
     b_usuario.innerHTML = sessionStorage.NOME_USUARIO;
+
+    const ctx = document.getElementById('chart-precisao');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Primeira Play', 'Segunda Play', 'Terceira Play', 'Quarta Play', 'Quinta Play', 'Sexta Play'], 
+            datasets: [{
+                label: '%',
+                data: [33, 46, 52, 49, 71, 80],
+                borderWidth: 2,
+                backgroundColor: 'red',
+                borderColor: 'red',
+                tension: 0.3
+            }
+            ]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    /* GRÁFICO DE BARRA */
+    const ctx2 = document.getElementById('chart-perguntas');
+
+    new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: ['Primeira Play', 'Segunda Play', 'Terceira Play', 'Quarta Play', 'Quinta Play', 'Sexta Play'], 
+            datasets: [{
+                label: '%',
+                data: [33, 46, 52, 49, 71, 80],
+                borderWidth: 2,
+                backgroundColor: 'red',
+                borderColor: 'red',
+                tension: 0.3
+            }
+            ]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
 </script>
