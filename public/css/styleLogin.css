@@ -1,0 +1,140 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Merriweather:wght@300..900&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #0d0d0d;
+    font-family: 'Merriweather', serif;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url(../assets/img/background_login.gif);
+    background-repeat: no-repeat; /* Faz com que a imagem não se repita */
+    background-size: cover; /* Preenche a imagem na tela toda */
+}
+
+.container-login {
+    width: 90%;
+    display: flex;
+    justify-content: start;
+    align-items: start;
+}
+
+.card-login {
+    width: 400px;
+    background-color: rgba(20, 20, 20, 0.9);
+    border: 1px solid #b22222;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 0 20px rgba(169, 140, 42, 0.4);
+}
+
+.card-forms {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.card-login .title {
+    color: #d9d9d9;
+    font-size: 32px;
+    text-align: center;
+    font-family: 'Cinzel', serif;
+    text-shadow: 0 0 8px #b22222;
+    margin-bottom: 1rem;
+}
+
+.campo input {
+    width: 95%;
+    height: 45px;
+    border-radius: 5px;
+    border: 1px solid #b22222;
+    background-color: transparent;
+    color: #d9d9d9;
+    padding: 0 10px;
+    outline: none;
+    transition: box-shadow 0.3s;
+}
+
+.campo input:focus {
+    box-shadow: 0 0 10px #a98c2a;
+}
+
+.card-login-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-login-btn p {
+    color: #d9d9d9;
+    font-size: 0.9rem;
+}
+
+.card-login-btn a {
+    color: #ff1010;
+    text-decoration: none;
+}
+
+.card-login-btn a:hover {
+    text-decoration: underline;
+}
+
+.card-login-btn .button {
+    width: 160px;
+    height: 45px;
+    background-color: #b22222;
+    color: #d9d9d9;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 1px;
+    transition: 0.3s;
+    border: 1px solid #a98c2a;
+    box-shadow: 0 0 10px rgba(178, 34, 34, 0.5);
+}
+
+.card-login-btn .button:hover {
+    background-color: #d62828;
+    box-shadow: 0 0 15px rgba(178, 34, 34, 0.8);
+}
+
+/* ALERTA */
+.alert-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    background: rgba(20, 20, 20, 0.9);
+    color: #d9d9d9;
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+    text-align: center;
+    border: 2px solid #b22222;
+    border-radius: 10px;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 0 30px rgba(178, 34, 34, 0.4);
+    opacity: 0;
+    z-index: 1000;
+    transition: all 0.4s ease-in-out;
+    text-shadow: 0 0 10px #b22222;
+}
+
+.alert-box.success{
+    border-color: #d4af37;
+    text-shadow: 0 0 10px #d4af37;
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+}
+
+.alert-box.show{
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.hidden {
+    display: none;
+}

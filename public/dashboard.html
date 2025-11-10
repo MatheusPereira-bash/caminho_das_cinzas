@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Souls-Like</title>
+    <link rel="stylesheet" href="./css/styleDashboard.css">
+</head>
+
+<body>
+    <div class="container-header">
+        <ul class="navbar">
+            <li><a href="./index.html">Voltar</a></li>
+        </ul>
+        <div class="hello">
+            <p>Olá, <span id="b_usuario">usuário</span></p>
+        </div>
+    </div>
+    
+
+    <header>
+        <h1 class="title">Dashboard - Caminho das Cinzas</h1>
+    </header>
+
+    <section class="status-bar">
+        <div class="status-item">Almas Adquiridas: <span>6200</span></div>
+        <div class="status-item">Precisão: <span>78%</span></div>
+        <div class="status-item">Última Batalha: <span>08/11/2025</span></div>
+    </section>
+
+    <main>
+        <section class="quiz-summary">
+            <div class="quiz-card">
+                <h2>SOULS QUIZ</h2>
+                <p>Precisão: <span class="gold">80%</span></p>
+                <p>Corretos: 24</p>
+                <p>Errados: 6</p>
+            </div>
+
+            <div class="quiz-card">
+                <h2>BOSS FIGHT</h2>
+                <p>Precisão: <span class="gold">65%</span></p>
+                <p>Corretos: 9</p>
+                <p>Errados: 5</p>
+            </div>
+        </section>
+
+        <section class="charts">
+            <div class="chart-box">
+                <h3>Precisão ao Longo do Tempo</h3>
+                <div class="chart-placeholder">[Gráfico de linha]</div>
+            </div>
+
+            <div class="chart-box">
+                <h3>Perguntas Mais Perdidas</h3>
+                <div class="chart-placeholder">[Gráfio de Barras]</div>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>
+<script>
+    b_usuario.innerHTML = sessionStorage.NOME_USUARIO;
+</script>

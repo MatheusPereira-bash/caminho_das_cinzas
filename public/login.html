@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="./css/styleLogin.css">
+</head>
+
+<body>
+    <div class="container-login">
+        <div class="card-login">
+            <div class="card-forms">
+                <p class="title">Olá, Inaceso</p>
+                <div class="campo">
+                    <input type="text" id="email_input" placeholder="Email">
+                </div>
+                <div class="campo">
+                    <input type="password" id="senha_input" placeholder="Senha">
+                </div>
+                <div class="card-login-btn">
+                    <p>Novo por aqui? <a href="./cadastro.html">Reacenda sua Chama</a></p>
+                    <button class="button" onclick="entrar()">Renascer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="alert-box" class="alert-box hidden">
+        <p id="alert-text"></p>
+    </div>
+</body>
+
+</html>
+
+<script>
+    function entrar() {
+        var emailVar = email_input.value;
+        var senhaVar = senha_input.value;
+
+        if (emailVar == '' || senhaVar == '') {
+            alert('Email e senha precisam estar preenchidos')
+        }
+        else {
+            console.log("FORM LOGIN: ", emailVar);
+            console.log("FORM SENHA: ", senhaVar);
+
+            fetch("/usuarios/autenticar", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    emailServer: emailVar,
+                    senhaServer: senhaVar
+                })
+            }).then(function (resposta) {
+                console.log("ESTOU NO THEN DO entrar()!")
+
+                if (resposta.ok) {
+                    showAlert('Login realizado com sucesso!', 'success');
+
+                    resposta.json().then(json => {
+                        console.log(json);
+                        console.log(JSON.stringify(json));
+                        sessionStorage.EMAIL_USUARIO = json.email;
+                        sessionStorage.NOME_USUARIO = json.nome
+
+                        setTimeout(function () {
+                            window.location = "./dashboard.html";
+                        }, 1000); // apenas para exibir o loading
+
+                    });
+
+                } else {
+
+                    showAlert('Email ou senha inválidos!', 'error');
+
+                    resposta.text().then(texto => {
+                        console.error(texto);
+                    });
+                }
+
+            }).catch(function (erro) {
+                console.log(erro);
+            })
+
+            return false;
+        }
+    }
+
+
+
+    function showAlert(message, type = "error") {
+        const alertBox = document.getElementById("alert-box");
+        const alertText = document.getElementById("alert-text");
+
+        alertText.innerText = message;
+
+        alertBox.classList.remove("hidden");
+        alertBox.classList.add("show");
+
+        // Define o tipo (erro/vermelho ou sucesso/dourado)
+        if (type === "success") {
+            alertBox.classList.add("success");
+            alertText.innerText = `🔥 BONFIRE LIT 🔥\n${message}`;
+        } else {
+            alertBox.classList.remove("success");
+            alertText.innerText = `💀 YOU DIED 💀\n${message}`;
+        }
+
+        // Some depois de 3s
+        setTimeout(() => {
+            alertBox.classList.remove("show");
+            setTimeout(() => alertBox.classList.add("hidden"), 400);
+        }, 3000);
+    }
+
+</script>
