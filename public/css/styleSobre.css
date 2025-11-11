@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Merriweather:wght@300..900&display=swap');
+
+body {
+    background: radial-gradient(circle at center, #111 0%, #0d0d0d 100%);
+    color: #d9d9d9;
+    font-family: 'Merriweather', serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Cabeçalho */
+header {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.container-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    margin-left: 92%;
+}
+
+.navbar {
+    display: flex;
+    flex-direction: row;
+    color: #d9d9d9;
+    gap: 30px;
+    cursor: pointer;
+    list-style: none;
+    margin-right: 10px;
+}
+
+.navbar a {
+    color: #d9d9d9;
+    text-decoration: none;
+    text-align: end;
+}
+
+.title {
+    font-family: 'Cinzel', serif;
+    font-size: 2.4em;
+    color: #d4af37;
+    text-shadow: 0 0 10px #b22222;
+}
+
+.subtitle {
+    color: #b22222;
+    font-style: italic;
+}
+
+/* Conteúdo Principal */
+.about-container {
+    max-width: 900px;
+    margin: 60px auto;
+    padding: 0 20px;
+    line-height: 1.8;
+}
+
+.about-section {
+    margin-bottom: 80px;
+}
+
+.about-section h2 {
+    color: #d4af37;
+    font-family: 'Cinzel', serif;
+    text-shadow: 0 0 8px #b22222;
+    border-left: 3px solid #b22222;
+    padding-left: 10px;
+    margin-bottom: 20px;
+}
+
+.about-section p {
+    font-size: 1.05em;
+    color: #d9d9d9;
+    text-align: justify;
+}
+
+/* Imagens */
+.img-box {
+    text-align: center;
+    margin-top: 25px;
+}
+
+.img-box img {
+    width: 100%;
+    max-width: 700px;
+    border-radius: 10px;
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    box-shadow: 0 0 20px rgba(178, 34, 34, 0.25);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.img-box img:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 35px rgba(212, 175, 55, 0.5);
+}
+
+/* Citação Final */
+blockquote {
+    font-style: italic;
+    color: #d4af37;
+    text-align: center;
+    font-size: 1.2em;
+    margin-top: 40px;
+    text-shadow: 0 0 6px #b22222;
+}
