@@ -64,7 +64,7 @@
                         console.log(json);
                         console.log(JSON.stringify(json));
                         sessionStorage.EMAIL_USUARIO = json.email;
-                        sessionStorage.NOME_USUARIO = json.nome
+                        sessionStorage.NOME_USUARIO = json.nome;
 
                         setTimeout(function () {
                             window.location = "./dashboard.html";
@@ -100,7 +100,6 @@
         alertBox.classList.remove("hidden");
         alertBox.classList.add("show");
 
-        // Define o tipo (erro/vermelho ou sucesso/dourado)
         if (type === "success") {
             alertBox.classList.add("success");
             alertText.innerText = `🔥 BONFIRE LIT 🔥\n${message}`;
@@ -109,7 +108,6 @@
             alertText.innerText = `💀 YOU DIED 💀\n${message}`;
         }
 
-        // Some depois de 3s
         setTimeout(() => {
             alertBox.classList.remove("show");
             setTimeout(() => alertBox.classList.add("hidden"), 400);
