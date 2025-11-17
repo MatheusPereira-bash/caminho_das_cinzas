@@ -29,6 +29,8 @@ CREATE TABLE questao (
 CREATE TABLE tentativa_quiz (
 	id_tentativa INT PRIMARY KEY AUTO_INCREMENT,
     pontuacao INT,
+    acertos INT,
+    erros INT,
     data_tentativa DATETIME,
     id_usuario INT,
     id_quiz INT,
@@ -95,3 +97,5 @@ INSERT INTO questao (enunciado, imagem, opcao1, opcao2, opcao3, alternativa_corr
 select * from questao;
 select * from quiz;
 select * from usuario;
+select * from tentativa_quiz;
+
