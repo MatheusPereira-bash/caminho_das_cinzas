@@ -12,6 +12,7 @@
 
     <div class="container">
         <h1 class="text">SOULS QUIZ</h1>
+        <p>Olá, <span id="b_usuario">usuário</span></p>
 
         <section class="game-area">
             <div class="message-card" id="message-card">
@@ -32,10 +33,216 @@
         <aside class="score-panel" aria-live="polite">
             <h3>Pontos</h3>
             <div id="score-display" class="score-value">0</div>
-            <p class="score-hint">Acerta: +10 | Erra: Reset</p>
+            <p class="score-hint">Acerta: +100 | Erra: Reset</p>
         </aside>
 
     </div>
 </body>
+<script>
+    b_usuario.innerHTML = sessionStorage.NOME_USUARIO;
+
+    // Pegando as variáveis pelo ID
+    // CONST = Variável fixa, não pode ser atribuída nenhum outro valor
+    const img = document.getElementById("imagemQuiz");
+    const opt1 = document.getElementById("opt1");
+    const opt2 = document.getElementById("opt2");
+    const opt3 = document.getElementById("opt3");
+    const nextBtn = document.getElementById("nextbtn");
+    const scoreDisplay = document.getElementById("score-display");
+    const messageCard = document.getElementById("message-card");
+
+    // Variáveis para o quiz
+    let questoes = [];
+    let indice = -1;
+    let score = 0;
+    let quizId = 1;
+
+    // Pontuação do jogador começa aqui
+    updateScoreDisplay();
+
+    // Caso eu clique no botão "NextBtn"
+    nextBtn.addEventListener('click', async () => {
+        // Vai buscar as questões
+        if (questoes.length === 0) {
+            try {
+                const res = await fetch(`/quiz/${quizId}/questoes`);
+                if (!res.ok) throw new Error('Falha ao carregar questões');
+                questoes = await res.json();
+            } catch (err) {
+                console.log(err);
+                showTemporaryMessage('Erro ao carregar questões', false);
+                return;
+            }
+
+            if (!Array.isArray(questoes) || questoes.length === 0) {
+                showTemporaryMessage('Nenhuma questão disponível', false);
+                return;
+            }
+        }
+
+        // Aqui eu avanço para a próxima questão
+        indice++;
+        if (indice >= questoes.length) {
+            // Usuário terminou o quiz = Registra na tentativa
+            await registrarTentativa();
+            showTemporaryMessage(`Quiz finalizado! Pontos ${score}`, true);
+            // Reseta o quiz para conseguir jogar novamente
+            indice = -1;
+            questoes = [];
+            return;
+        }
+
+        mostrarQuestaoAtual();
+    });
+
+    // Caso eu clique nos botões de opção
+    opt1.addEventListener('click', () => responder(0));
+    opt2.addEventListener('click', () => responder(1));
+    opt3.addEventListener('click', () => responder(2));
+
+    // Função para mostrar a questão atual
+    function mostrarQuestaoAtual() {
+        const q = questoes[indice];
+        if (!q) {
+            return;
+        }
+
+        // Imagens
+        img.src = q.imagem || './assets/img/soulsQuiz/darksouls2/majula.jpg';
+        img.alt = q.enunciado || 'Questão';
+
+        const alternatives = q.alternatives;
+
+        // Se existir alternativas ele vai preencher os botões
+        if (Array.isArray(alternatives) && alternatives.length >= 3) {
+            opt1.querySelector('span').textContent = alternatives[0];
+            opt2.querySelector('span').textContent = alternatives[1];
+            opt3.querySelector('span').textContent = alternatives[2];
+            // Habilita os botões
+            setOptionsDisabled(false);
+        } else {
+            // Se não ter alternativas ele vai mostrar um placeholder
+            opt1.querySelector('span').textContent = 'Opção A';
+            opt2.querySelector('span').textContent = 'Opção B';
+            opt3.querySelector('span').textContent = 'Opção C';
+            setOptionsDisabled(false);
+        }
+
+        // Limpa os efeitos especiais
+        messageCard.classList.remove('correct', 'wrong');
+    }
+
+    // Função para validar resposta do usuário
+    function responder(choiceIndex) {
+        // Valida se o jogo foi iniciado
+        if (indice < 0 || indice >= questoes.length) {
+            return;
+        }
+
+        const q = questoes[indice];
+
+        // Vamos determinar qual letra/indice é o correto
+        // Já que nosso backend pode enviar A B C ou 0 1 2
+        let corretaIndex = null;
+        if (typeof q.alternativa_correta === 'string') {
+            const letra = q.alternativa_correta.trim().toUpperCase();
+            corretaIndex = (letra === 'A') ? 0 : (letra === 'B') ? 1 : (letra === 'C') ? 2 : null;
+        }
+        else if (typeof q.alternativa_correta === 'number') {
+            corretaIndex = q.alternativa_correta;
+        }
+        else if (Array.isArray(q.alternatives) && q.alternatives.length >= 3 && q.correctIndex != null) {
+            corretaIndex = q.correctIndex;
+        }
+
+        const acertou = (corretaIndex === null) ? false : (choiceIndex === corretaIndex);
+
+        if (acertou) {
+            score += 100;
+            updateScoreDisplay();
+            feedbackVisual(true);
+        }
+        else {
+            score = 0;
+            updateScoreDisplay();
+            feedbackVisual(false);
+        }
+
+        // Aqui eu bloqueio os botões por um tempo, evitando que acumule pontos "bugados"
+        setOptionsDisabled(true);
+        setTimeout(() => {
+            nextBtn.click();
+        }, 800);
+    }
+
+    // Função para atualizar a pontuação
+    function updateScoreDisplay() {
+        scoreDisplay.textContent = score;
+        scoreDisplay.classList.add('score-flash');
+        setTimeout(() => scoreDisplay.classList.remove('score-flash'), 300);
+    }
+
+    // Função para ativar ou desativar os botões, evitando pontos "bugados"
+    function setOptionsDisabled(flag) {
+        [opt1, opt2, opt3].forEach(b => b.disabled = !!flag);
+    }
+
+    // Função do Feedback Visual
+    function feedbackVisual(isPositive) {
+        if (isPositive) {
+            messageCard.classList.add('correct');
+            showTemporaryMessage('+100 - ACERTOU', true)
+        }
+        else {
+            messageCard.classList.add('wrong');
+            showTemporaryMessage('ERROU - Pontos resetados', false);
+        }
+    }
+
+    // Função da mensagem temporária (customizado)
+    function showTemporaryMessage(text, positive) {
+        
+        const overlayId = '__temp_msg';
+        let existing = document.getElementById(overlayId);
+        if (existing) existing.remove();
+
+        const div = document.createElement('div');
+        div.id = overlayId;
+        div.style.position = 'absolute';
+        div.style.inset = '0';
+        div.style.display = 'flex';
+        div.style.alignItems = 'center';
+        div.style.justifyContent = 'center';
+        div.style.background = positive ? 'rgba(0,120,40,0.12)' : 'rgba(120,0,0,0.12)';
+        div.style.color = positive ? '#cfffdf' : '#ffd6d6';
+        div.style.fontWeight = '700';
+        div.style.fontFamily = 'Cinzel, serif';
+        div.style.fontSize = '1.1rem';
+        div.textContent = text;
+        messageCard.appendChild(div);
+
+        setTimeout(() => { div.remove(); }, 700);
+    }
+
+    // Registrar a tentativa depois de finalizar o quiz
+    async function registrarTentativa() {
+        // Verificando se o usuário está logado
+        const idUsuario = sessionStorage.ID_USUARIO || null;
+        try {
+            const res = await fetch(`/quiz/${quizId}/registrarTentativa`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    idUsuario: idUsuario,
+                    pontuacao: score
+                })
+            });
+            if (!res.ok) throw new Error('Erro no registro');
+            console.log('Tentativa registrada'); 
+            } catch (err) {
+                console.error('Falha ao registrar tentativa', err);
+            }
+        }
+</script>
 
 </html>
