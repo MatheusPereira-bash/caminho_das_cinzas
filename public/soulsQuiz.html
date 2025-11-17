@@ -56,6 +56,8 @@
     let indice = -1;
     let score = 0;
     let quizId = 1;
+    let acertos = 0
+    let erros = 0;
 
     // Pontuação do jogador começa aqui
     updateScoreDisplay();
@@ -65,7 +67,11 @@
         // Vai buscar as questões
         if (questoes.length === 0) {
             try {
-                const res = await fetch(`/quiz/${quizId}/questoes`);
+                const res = await fetch(`/quiz/${quizId}/questoes`, {
+                    headers: {
+                        "id-usuario": sessionStorage.ID_USUARIO
+                    }
+                });
                 if (!res.ok) throw new Error('Falha ao carregar questões');
                 questoes = await res.json();
             } catch (err) {
@@ -158,11 +164,13 @@
         const acertou = (corretaIndex === null) ? false : (choiceIndex === corretaIndex);
 
         if (acertou) {
+            acertos++;
             score += 100;
             updateScoreDisplay();
             feedbackVisual(true);
         }
         else {
+            erros++;
             score = 0;
             updateScoreDisplay();
             feedbackVisual(false);
@@ -227,14 +235,18 @@
     // Registrar a tentativa depois de finalizar o quiz
     async function registrarTentativa() {
         // Verificando se o usuário está logado
-        const idUsuario = sessionStorage.ID_USUARIO || null;
+        // const idUsuario = sessionStorage.ID_USUARIO || null;
         try {
             const res = await fetch(`/quiz/${quizId}/registrarTentativa`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json',
+                    "id-usuario": sessionStorage.ID_USUARIO
+                 },
                 body: JSON.stringify({
-                    idUsuario: idUsuario,
-                    pontuacao: score
+                    idUsuario: sessionStorage.ID_USUARIO,
+                    pontuacao: score,
+                    acertos: acertos,
+                    erros: erros
                 })
             });
             if (!res.ok) throw new Error('Erro no registro');
