@@ -30,7 +30,6 @@ body {
 
 .hero-imgs img {
     width: 33.33%;
-    filter: brightness(70%);
 }
 
 .intro-title {
