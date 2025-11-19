@@ -49,13 +49,13 @@
 
         <section class="charts">
             <div class="chart-box">
-                <h3>Precisão ao Longo do Tempo</h3>
-                <canvas id="chart-precisao"></canvas>
+                <h3>Pontuação ao Longo do Tempo</h3>
+                <canvas id="graficoPontuacao"></canvas>
             </div>
 
             <div class="chart-box">
-                <h3>Perguntas Mais Perdidas</h3>
-                <canvas id="chart-perguntas"></canvas>
+                <h3>Acertos x Erros</h3>
+                <canvas id="graficoAcertosErros"></canvas>
             </div>
         </section>
     </main>
@@ -65,91 +65,147 @@
 <script>
     b_usuario.innerHTML = sessionStorage.NOME_USUARIO;
 
-    // GRÁFICO DE LINHA
-    const ctx = document.getElementById('chart-precisao').getContext('2d');
+    let graficoPontuacao;
+    let graficoAcertosErros;
 
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['1° Play', '2° Play', '3° Play', '4° Play', '5° Play', '6° Play'],
-            datasets: [{
-                label: 'Precisão (%)',
-                data: [33, 46, 52, 49, 71, 80],
-                borderWidth: 2,
-                backgroundColor: '#b22222',
-                borderColor: '#d4af37',
-                pointBackgroundColor: '#b22222',
-                pointRadius: 5,
-                pointHoverRadius: 8,
-                tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    labels: {
-                        color: '#d4af37',
-                        font: { family: 'Cinzel', size: 14 }
+    window.onload = () => {
+        const idUsuario = sessionStorage.ID_USUARIO;
+
+        if (!idUsuario) {
+            window.location.href = './login.html';
+            return;
+        }
+
+        carregarEstatisticas(idUsuario);
+    };
+
+    async function carregarEstatisticas(idUsuario) {
+        try {
+            const res = await fetch(`/estatisticas/${idUsuario}`);
+
+            if (!res.ok) {
+                throw new Error("Erro ao buscar estatísticas");
+            }
+
+            const dados = await res.json();
+
+            plotarPontuacao(dados);
+            plotarAcertosErros(dados);
+
+        } catch (erro) {
+            console.error(erro);
+        }
+    }
+
+
+    // GRÁFICO PONTUAÇÃO
+    function plotarPontuacao(dados) {
+        const ctx = document.getElementById('graficoPontuacao').getContext('2d');
+
+        const labels = dados.map(item => "Tentativa " + item.tentativa);
+        const pontos = dados.map(item => item.pontuacao);
+
+        graficoPontuacao = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Pontuação',
+                    data: pontos,
+                    borderWidth: 2,
+                    backgroundColor: '#b22222',
+                    borderColor: '#d4af37',
+                    pointBackgroundColor: '#b22222',
+                    pointRadius: 5,
+                    pointHoverRadius: 8,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#d4af37',
+                            font: { family: 'Cinzel', size: 14 }
+                        }
+                    },
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            color: '#d9d9d9',
+                            font: { family: 'Merriweather' }
+                        },
+                        grid: { color: 'rgba(178, 34, 34, 0.2)' }
+                    },
+                    y: {
+                        ticks: {
+                            color: '#d9d9d9'
+                        },
+                        grid: { color: 'rgba(178, 34, 34, 0.15)' },
+                        beginAtZero: true
                     }
                 },
+            }
+        });
+    }
+
+    // GRÁFICO ACERTOS E ERROS
+    function plotarAcertosErros(dados) {
+        const ctx2 = document.getElementById('graficoAcertosErros').getContext('2d');
+
+        const labels = dados.map(item => "Tentativa " + item.tentativa);
+        const acertos = dados.map(item => item.acertos);
+        const erros = dados.map(item => item.erros);
+
+        graficoAcertosErros = new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    { 
+                        label: "Acertos",
+                        data: acertos,
+                        borderWidth: 1.5,
+                        backgroundColor: '#b22222',
+                        borderColor: '#b22222',
+                        borderRadius: 6
+                    }, 
+                    {
+                        label: "Erros",
+                        data: erros,
+                        borderWidth: 1.5,
+                        backgroundColor: '#b22222',
+                        borderColor: '#b22222',
+                        borderRadius: 6
+                    }
+                ]
             },
-            scales: {
-                x: {
-                    ticks: {
-                        color: '#d9d9d9',
-                        font: { family: 'Merriweather' }
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#d4af37',
+                            font: { family: 'Cinzel', size: 14 }
+                        }
                     },
-                    grid: { color: 'rgba(178, 34, 34, 0.2)' }
                 },
-                y: {
-                    ticks: {
-                        color: '#d9d9d9'
+                scales: {
+                    x: {
+                        ticks: { color: '#d9d9d9' },
+                        grid: { color: 'rgba(178, 34, 34, 0.15)' }
                     },
-                    grid: { color: 'rgba(178, 34, 34, 0.15)' },
-                    beginAtZero: true
-                }
-            },
-        }
-    });
-
-    // GRÁFICO DE BARRAS
-    const ctx2 = document.getElementById('chart-perguntas').getContext('2d');
-
-    new Chart(ctx2, {
-        type: 'bar',
-        data: {
-            labels: ['1° Play', '2° Play', '3° Play', '4° Play', '5° Play', '6° Play'],
-            datasets: [{
-                label: 'Taxa de Erros (%)',
-                data: [33, 46, 52, 49, 71, 80],
-                borderWidth: 1.5,
-                backgroundColor: '#b22222',
-                borderColor: '#b22222',
-                borderRadius: 6
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    labels: {
-                        color: '#d4af37',
-                        font: { family: 'Cinzel', size: 14 }
+                    y: {
+                        ticks: { color: '#d9d9d9' },
+                        grid: { color: 'rgba(178, 34, 34, 0.15)' },
+                        beginAtZero: true
                     }
                 },
-            },
-            scales: {
-                x: {
-                    ticks: { color: '#d9d9d9' },
-                    grid: { color: 'rgba(178, 34, 34, 0.15)' }
-                },
-                y: {
-                    ticks: { color: '#d9d9d9' },
-                    grid: { color: 'rgba(178, 34, 34, 0.15)' },
-                    beginAtZero: true
-                }
-            },
-        }
-    });
+            }
+        });
+    }
+
+
 </script>
