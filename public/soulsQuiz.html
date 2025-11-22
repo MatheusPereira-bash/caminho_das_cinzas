@@ -12,7 +12,7 @@
 
     <div class="container">
         <h1 class="text">SOULS QUIZ</h1>
-        <p>Olá, <span id="b_usuario">usuário</span></p>
+        
 
         <section class="game-area">
             <div class="message-card" id="message-card">
@@ -39,7 +39,15 @@
     </div>
 </body>
 <script>
-    b_usuario.innerHTML = sessionStorage.NOME_USUARIO;
+
+    window.onload = () => {
+        const idUsuario = sessionStorage.ID_USUARIO;
+
+        if (!idUsuario) {
+            window.location.href = './login.html';
+            return;
+        }
+    };
 
     // Pegando as variáveis pelo ID
     // CONST = Variável fixa, não pode ser atribuída nenhum outro valor
@@ -63,43 +71,48 @@
     updateScoreDisplay();
 
     // Caso eu clique no botão "NextBtn"
-    nextBtn.addEventListener('click', async () => {
-        // Vai buscar as questões
+    nextBtn.addEventListener('click', () => {
         if (questoes.length === 0) {
-            try {
-                const res = await fetch(`/quiz/${quizId}/questoes`, {
-                    headers: {
-                        "id-usuario": sessionStorage.ID_USUARIO
-                    }
-                });
-                if (!res.ok) throw new Error('Falha ao carregar questões');
-                questoes = await res.json();
-            } catch (err) {
-                console.log(err);
-                showTemporaryMessage('Erro ao carregar questões', false);
-                return;
-            }
+            // Busca questões no banco
+            fetch(`/quiz/${quizId}/questoes`, {
+                headers: { "id-usuario": sessionStorage.ID_USUARIO }
+            })
+            .then(res => {
+                if(!res.ok) throw new Error("Falha ao carregar questões");
+                return res.json();
+            })
+            .then(json => {
+                questoes = json;
 
-            if (!Array.isArray(questoes) || questoes.length === 0) {
-                showTemporaryMessage('Nenhuma questão disponível', false);
-                return;
-            }
+                if (!Array.isArray(questoes) || questoes.length === 0) {
+                    showTemporaryMessage("Nenhuma questões disponível", false);
+                    return;
+                }
+
+                indice++;
+                mostrarQuestaoAtual();
+            })
+            .catch(err => {
+                console.error(err);
+                showTemporaryMessage("Erro ao carregar questões", false);
+            });
+
+            return;
         }
 
-        // Aqui eu avanço para a próxima questão
         indice++;
         if (indice >= questoes.length) {
-            // Usuário terminou o quiz = Registra na tentativa
-            await registrarTentativa();
-            showTemporaryMessage(`Quiz finalizado! Pontos ${score}`, true);
-            // Reseta o quiz para conseguir jogar novamente
-            indice = -1;
-            questoes = [];
+            // Questões finalizadas adicionando pontos a tentativa
+            registrarTentativa(() => {
+                showTemporaryMessage(`Quiz finalizado! Pontos ${score}`, true);
+                indice = -1;
+                questoes = [];
+            });
             return;
         }
 
         mostrarQuestaoAtual();
-    });
+    })
 
     // Caso eu clique nos botões de opção
     opt1.addEventListener('click', () => responder(0));
@@ -233,28 +246,34 @@
     }
 
     // Registrar a tentativa depois de finalizar o quiz
-    async function registrarTentativa() {
-        // Verificando se o usuário está logado
-        // const idUsuario = sessionStorage.ID_USUARIO || null;
-        try {
-            const res = await fetch(`/quiz/${quizId}/registrarTentativa`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json',
-                    "id-usuario": sessionStorage.ID_USUARIO
-                 },
-                body: JSON.stringify({
-                    idUsuario: sessionStorage.ID_USUARIO,
-                    pontuacao: score,
-                    acertos: acertos,
-                    erros: erros
-                })
-            });
-            if (!res.ok) throw new Error('Erro no registro');
-            console.log('Tentativa registrada'); 
-            } catch (err) {
-                console.error('Falha ao registrar tentativa', err);
-            }
-        }
+    function registrarTentativa(callback) {
+        
+        fetch(`quiz/${quizId}/registrarTentativa`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'id-usuario': sessionStorage.ID_USUARIO
+            },
+            body: JSON.stringify({
+                idUsuario: sessionStorage.ID_USUARIO,
+                pontuacao: score,
+                acertos: acertos,
+                erros: erros
+            })
+        })
+        .then(res => {
+            if (!res.ok) throw new Error("Erro ao registrar tentativa");
+            return res.json().catch(() => null);
+        })
+        .then(() => {
+            console.log("Tentativa registrada");
+            if (callback) callback();
+        })
+        .catch(err => {
+            console.error("Falha ao registrar tentativa", err);
+            if (callback) callback();
+        });
+    }
 </script>
 
 </html>
