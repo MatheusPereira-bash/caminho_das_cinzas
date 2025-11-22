@@ -25,25 +25,22 @@
     </header>
 
     <section class="status-bar">
-        <div class="status-item">Almas Adquiridas: <span>6200</span></div>
-        <div class="status-item">Precisão: <span>78%</span></div>
-        <div class="status-item">Última Batalha: <span>08/11/2025</span></div>
+        <div class="status-item">Almas Adquiridas: <span>X</span></div>
+        <div class="status-item">Precisão: <span>X%</span></div>
+        <div class="status-item">Última Batalha: <span>XX/XX/20XX</span></div>
     </section>
 
     <main>
         <section class="quiz-summary">
             <div class="quiz-card">
-                <h2>SOULS QUIZ</h2>
-                <p>Precisão: <span class="gold">80%</span></p>
-                <p>Corretos: 24</p>
-                <p>Errados: 6</p>
+                <h2>Hollowing</h2>
+                <p>Maldição: <span class="gold">X</span></p>
             </div>
 
             <div class="quiz-card">
-                <h2>BOSS FIGHT</h2>
-                <p>Precisão: <span class="gold">65%</span></p>
-                <p>Corretos: 9</p>
-                <p>Errados: 5</p>
+                <h2>Corretos x Errados</h2>
+                <p>Corretos: <span class="gold">X</span></p>
+                <p>Errados: <strong class="gold">X</strong></p>
             </div>
         </section>
 
@@ -79,31 +76,36 @@
         carregarEstatisticas(idUsuario);
     };
 
-    async function carregarEstatisticas(idUsuario) {
-        try {
-            const res = await fetch(`/estatisticas/${idUsuario}`);
-
+    // FUNÇÃO PARA CARREGAR OS DADOS DO BANCO
+    function carregarEstatisticas(idUsuario) {
+        fetch (`/estatisticas/${idUsuario}`, { cache: 'no-store' })
+          .then(function (res) {
             if (!res.ok) {
-                throw new Error("Erro ao buscar estatísticas");
+                throw "Erro ao buscar estatísticas";
             }
-
-            const dados = await res.json();
-
+            return res.json();
+          })
+          .then (function (dados) {
             plotarPontuacao(dados);
             plotarAcertosErros(dados);
-
-        } catch (erro) {
-            console.error(erro);
-        }
-    }
-
+            preencherKPIs(dados);
+          })
+          .catch (function (erro) {
+            console.error("Erro na API:", erro);
+          });
+}
 
     // GRÁFICO PONTUAÇÃO
     function plotarPontuacao(dados) {
         const ctx = document.getElementById('graficoPontuacao').getContext('2d');
 
-        const labels = dados.map(item => "Tentativa " + item.tentativa);
-        const pontos = dados.map(item => item.pontuacao);
+        let labels = [];
+        let pontos = [];
+
+        for (let i = 0; i < dados.length; i++) {
+            labels.push("Tentativa " + dados[i].tentativa);
+            pontos.push(dados[i].pontuacao);
+        }
 
         graficoPontuacao = new Chart(ctx, {
             type: 'line',
@@ -155,23 +157,29 @@
     function plotarAcertosErros(dados) {
         const ctx2 = document.getElementById('graficoAcertosErros').getContext('2d');
 
-        const labels = dados.map(item => "Tentativa " + item.tentativa);
-        const acertos = dados.map(item => item.acertos);
-        const erros = dados.map(item => item.erros);
+        let labels = [];
+        let acertos = [];
+        let erros = [];
+
+        for (let i = 0; i < dados.length; i++) {
+            labels.push("Tentativa " + dados[i].tentativa);
+            acertos.push(dados[i].acertos);
+            erros.push(dados[i].erros);
+        }
 
         graficoAcertosErros = new Chart(ctx2, {
             type: 'bar',
             data: {
                 labels: labels,
                 datasets: [
-                    { 
+                    {
                         label: "Acertos",
                         data: acertos,
                         borderWidth: 1.5,
                         backgroundColor: '#b22222',
                         borderColor: '#b22222',
                         borderRadius: 6
-                    }, 
+                    },
                     {
                         label: "Erros",
                         data: erros,
@@ -207,5 +215,34 @@
         });
     }
 
+    // KPI's
+    function preencherKPIs(lista) {
+        if (lista.length === 0) {
+            return;
+        }
 
+        const ultima = lista[lista.length - 1];
+
+        const almas = ultima.pontuacao ?? 0;
+        const acertos = ultima.acertos ?? 0;
+        const erros = ultima.erros ?? 0;
+        const total = acertos + erros;
+
+        const precisao = (acertos + erros) > 0
+            ? ((acertos / (acertos + erros)) * 100).toFixed(1)
+            : 0;
+
+        const maldicao = ((erros / total) * 100).toFixed(1);
+
+        const dataFormatada = ultima.momento ?? "Nunca jogou";
+
+        
+        document.querySelector(".status-item:nth-child(1) span").innerHTML = almas;
+        document.querySelector(".status-item:nth-child(2) span").innerHTML = `${precisao}%`;
+        document.querySelector(".status-item:nth-child(3) span").innerHTML = dataFormatada;
+
+        document.querySelector(".quiz-card:nth-child(1) p:nth-child(2) .gold").innerHTML = `${maldicao}%`;
+        document.querySelector(".quiz-card:nth-child(2) span").innerHTML = `${acertos}`;
+        document.querySelector(".quiz-card:nth-child(2) strong").innerHTML = `${erros}`;
+    }
 </script>

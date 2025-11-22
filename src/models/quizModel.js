@@ -29,10 +29,10 @@ function listarQuestoes(idQuiz) {
 }
 
 // Aqui eu registro a tentativa quando o quiz é finalizado
-function registrarTentativa(idUsuario, idQuiz, pontuacao){
+function registrarTentativa(idUsuario, idQuiz, pontuacao, acertos, erros){
     var sql = `
-        INSERT INTO tentativa_quiz (id_usuario, id_quiz, pontuacao, data_tentativa)
-        VALUES (${idUsuario}, ${idQuiz}, ${pontuacao}, NOW());
+        INSERT INTO tentativa_quiz (id_usuario, id_quiz, pontuacao, acertos, erros, data_tentativa)
+        VALUES (${idUsuario}, ${idQuiz}, ${pontuacao}, ${acertos}, ${erros}, NOW());
     `;
     return database.executar(sql);
 }
