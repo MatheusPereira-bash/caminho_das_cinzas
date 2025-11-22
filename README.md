@@ -4,7 +4,7 @@
 📖 Sobre o Projeto
 
 Caminho das Cinzas é um website interativo inspirado nos jogos Souls-like da FromSoftware e do diretor Hidetaka Miyazaki, como Dark Souls (trilogia), Bloodborne e Elden Ring.
-O site busca capturar a essência punitiva e recompensadora desses mundos sombrios, oferecendo informações detalhadas sobre bosses, NPCs e cenários icônicos, além de minigames desafiadores que testam o conhecimento e a persistência do jogador.
+O site busca capturar a essência punitiva e recompensadora desses mundos sombrios, oferecendo informações detalhadas sobre bosses e NPCs, além de um minigame desafiador que testa o conhecimento e a persistência do jogador.
 
 ⚔️ Funcionalidades
 
@@ -12,18 +12,14 @@ O site busca capturar a essência punitiva e recompensadora desses mundos sombri
 
 • Informações sobre Bloodborne, Dark Souls I, II e III e Elden Ring.
 
-• Seções dedicadas a chefes, NPCs e locais marcantes de cada jogo.
+• Seções dedicadas a chefes e NPCs de cada jogo.
 
 • Textos inspirados na narrativa enigmática e melancólica do universo Souls.
 
-🧩 Minigames Punitivos
+🧩 Minigame
 1. Souls Quiz
-Tente adivinhar de qual jogo e local pertence a imagem mostrada.
+Tente adivinhar o local ou boss que aparece na imagem.
 Um teste de memória e atenção aos detalhes.
-
-2. Boss Fight Quiz
-Enfrente uma “luz” inimiga em um duelo de conhecimento.
-Cada acerto causa dano ao inimigo, mas um erro pode ser fatal.
 
 🔥 Objetivo
 
