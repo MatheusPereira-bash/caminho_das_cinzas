@@ -18,13 +18,22 @@ function listarQuestoes(idQuiz) {
 
     // Isso é um JSON - a estrutura dele, os dados são montados automaticamente pelo banco
     return database.executar(sql).then(resultado => {
-        return resultado.map(q => ({
-            id_questao: q.id_questao,
-            enunciado: q.enunciado,
-            imagem: q.imagem,
-            alternatives: [q.opcao1, q.opcao2, q.opcao3],
-            alternativa_correta: q.alternativa_correta
-        }));
+        let listaQuestoes = [];
+
+        for (let x = 0; x < resultado.length; x++) {
+            let q = resultado[x];
+
+            let questao = {
+                id_questao: q.id_questao,
+                enunciado: q.enunciado,
+                imagem: q.imagem,
+                alternatives: [q.opcao1, q.opcao2, q.opcao3],
+                alternativa_correta: q.alternativa_correta
+            };
+
+            listaQuestoes.push(questao);
+        }
+        return listaQuestoes;
     });
 }
 
