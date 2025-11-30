@@ -25,22 +25,22 @@
     </header>
 
     <section class="status-bar">
-        <div class="status-item">Almas Adquiridas: <span>X</span></div>
-        <div class="status-item">Precisão: <span>X%</span></div>
-        <div class="status-item">Última Batalha: <span>XX/XX/20XX</span></div>
+        <div class="status-item">Almas Adquiridas: <span>0</span></div>
+        <div class="status-item">Precisão: <span>0%</span></div>
+        <div class="status-item">Última Batalha: <span>00/00/0025</span></div>
     </section>
 
     <main>
         <section class="quiz-summary">
             <div class="quiz-card">
                 <h2>Hollowing</h2>
-                <p>Maldição: <span class="gold">X</span></p>
+                <p>Maldição: <span class="gold">0%</span></p>
             </div>
 
             <div class="quiz-card">
                 <h2>Corretos x Errados</h2>
-                <p>Corretos: <span class="gold">X</span></p>
-                <p>Errados: <strong class="gold">X</strong></p>
+                <p>Corretos: <span class="gold">0</span></p>
+                <p>Errados: <strong class="gold">0</strong></p>
             </div>
         </section>
 
@@ -223,18 +223,23 @@
 
         const ultima = lista[lista.length - 1];
 
-        const almas = ultima.pontuacao ?? 0;
-        const acertos = ultima.acertos ?? 0;
-        const erros = ultima.erros ?? 0;
+        const almas = ultima.pontuacao || 0;
+        const acertos = ultima.acertos || 0;
+        const erros = ultima.erros || 0;
+
         const total = acertos + erros;
 
-        const precisao = (acertos + erros) > 0
-            ? ((acertos / (acertos + erros)) * 100).toFixed(1)
-            : 0;
+        let precisao = 0;
+        if (total > 0) {
+            precisao = ((acertos / total) * 100).toFixed(1);
+        }
 
-        const maldicao = ((erros / total) * 100).toFixed(1);
+        let maldicao = 0;
+        if (total > 0) {
+            maldicao = ((erros / total) * 100).toFixed(1);
+        }
 
-        const dataFormatada = ultima.momento ?? "Nunca jogou";
+        const dataFormatada = ultima.momento || "Nunca jogou";
 
         
         document.querySelector(".status-item:nth-child(1) span").innerHTML = almas;
